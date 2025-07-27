@@ -1,0 +1,18 @@
+services:
+  neo4j-kg:
+    image: neo4j:5.18-enterprise
+    container_name: KG2
+    ports:
+      - "7474:7474"   # HTTP browser
+      - "7687:7687"   # Bolt protocol
+    environment:
+      NEO4J_AUTH: "neo4j/Meniere19"
+      NEO4JLABS_PLUGINS: '["n10s"]'
+      NEO4J_ACCEPT_LICENSE_AGREEMENT: "yes"
+      NEO4J_PLUGINS: '["n10s"]'
+      NEO4J_dbms_security_procedures_unrestricted: "n10s.*"
+    volumes:
+        - ./neo4j/data:/data
+        - ./neo4j/plugins:/plugins
+        - ./export:/import 
+    restart: unless-stopped

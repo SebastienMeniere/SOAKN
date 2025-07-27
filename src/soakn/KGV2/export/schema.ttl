@@ -1,0 +1,22 @@
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+
+<foaf:Group> a owl:Class .
+
+<gr:ProductOrServiceModel> a owl:Class .
+
+<rio:Transaction> a owl:Class .
+
+<rupo:ageBand> a owl:DatatypeProperty .
+
+<rupo:householdSize> a owl:DatatypeProperty .
+
+<rupo:incomeBand> a owl:DatatypeProperty .
+
+<schema:brand> a owl:DatatypeProperty .
+
+<schema:manufacturer> a owl:DatatypeProperty .
+
+<schema:packageQuantity> a owl:DatatypeProperty .
+
+<skos:broader> a owl:DatatypeProperty .
+

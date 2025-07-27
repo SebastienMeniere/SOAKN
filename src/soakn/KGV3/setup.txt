@@ -1,0 +1,69 @@
+Constraints 
+CREATE CONSTRAINT household_key_unique IF NOT EXISTS
+FOR (h:Household) REQUIRE h.household_key IS UNIQUE;
+
+CREATE CONSTRAINT product_id_unique IF NOT EXISTS
+FOR (p:Product) REQUIRE p.product_id IS UNIQUE;
+
+CREATE CONSTRAINT store_id_unique IF NOT EXISTS
+FOR (s:Store) REQUIRE s.store_id IS UNIQUE;
+
+CREATE CONSTRAINT n10s_unique_uri IF NOT EXISTS
+FOR (r:Resource)
+REQUIRE r.uri IS UNIQUE;
+
+
+CALL n10s.graphconfig.init()
+
+
+adding schema:
+@prefix : <http://example.com/retail#>.
+@prefix owl: <http://www.w3.org/2002/07/owl#>.
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
+
+:Household      a owl:Class .
+:Product        a owl:Class .
+:Store          a owl:Class .
+
+:Purchased      a owl:ObjectProperty ;
+  rdfs:domain :Household ; rdfs:range :Product .
+
+:OccursInStore  a owl:ObjectProperty ;
+  rdfs:domain :Household ; rdfs:range :Store .
+
+
+
+5 Keeping the schema future-proof (practical rules)
+
+One new attribute = one new owl:DatatypeProperty.
+You add it in schema.ttl, re-import the ontology (n10s merges), then start storing values. No graph rewrite needed.
+A brand-new entity type?
+Declare a class, rdfs:subClassOf an existing high-level class.
+Example: ret:LoyaltyProgramParticipant ⊑ ret:Consumer.
+Don’t explode relationship types.
+Even if the raw data distinguishes “bought with coupon” vs “bought full price”, keep one edge type (hasLine) and encode the nuance as data properties (couponUsed = true). Fewer edge types → simpler GNN message-passing.
+Stable IDs everywhere.
+Use the natural keys you already have (household_key, PRODUCT_ID, STORE_ID, BASKET_ID) as owl:InverseFunctionalProperty in semantics – in Neo4j just keep uniqueness constraints.
+Namespace discipline.
+Keep everything you coin under http://example.com/retail# (ret:).
+When you reuse external terms (schema.org, GoodRelations) link with rdfs:subClassOf / owl:equivalentClass, but don’t import the entire external TTL if you only need those few URIs.
+
+
+CALL n10s.nsprefixes.add("ret", "http://example.com/retail#")
+// make sure to make the namespace abrevious 
+
+
+PLANNING:
+- Need to decide between the languages used and when 
+The key idea is that we use the languages and rdfs to steal their different vocab defs and ontoologies
+knowing that we arent fucking up logically because smarter people came up with them. The issue
+then is to actually come up with a representation of the retail space that is complex and useful, 
+able to accomadate complex data. 
+
+- are there classes ?
+- are there properties and subproperties ?
+    - in the retail context 
+
+
+
+if anything breaks you can always just delete the fucking neo4j data

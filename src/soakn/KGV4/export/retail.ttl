@@ -1,0 +1,120 @@
+############################################################
+#  retail-temporal.ttl
+#  Minimal Temporal Retail Ontology   (edge-time / RDF-star)
+#  Version 1.0 – 2025-06-24
+############################################################
+
+@base        <soakn> .
+@prefix :    <soakn> .
+@prefix time:<http://www.w3.org/2006/time#> .
+@prefix schema:<https://schema.org/> .
+@prefix gr:  <http://purl.org/goodrelations/v1#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdfs:<http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+############################################################
+#  Ontology header
+############################################################
+<soakn>
+        a               owl:Ontology ;
+        rdfs:label      "Minimal Temporal Retail Ontology (edge-time / RDF-star)" ;
+        owl:versionInfo "1.0 – 2025-06-24" .
+
+############################################################
+#  CLASSES
+############################################################
+:Consumer    a owl:Class ; rdfs:label "Consumer" .
+
+:Product   a owl:Class ;
+           rdfs:label "Product" ;
+           rdfs:subClassOf gr:ProductOrService , schema:Product .
+
+:Seller    a owl:Class ;
+           rdfs:label "Seller" ;
+           rdfs:subClassOf schema:Organization , gr:BusinessEntity .
+
+:Location  a owl:Class ;
+           rdfs:label "Location" ;
+           rdfs:subClassOf schema:Place .
+
+############################################################
+#  OBJECT PROPERTIES  (graph topology)
+############################################################
+:purchased    a owl:ObjectProperty ;
+              rdfs:domain :Consumer ;
+              rdfs:range  :Product ;
+              rdfs:label  "purchased" ;
+              rdfs:comment "Edge representing a purchase of a Product by a Person." .
+
+:atSeller     a owl:ObjectProperty ;
+              rdfs:domain :Consumer ;
+              rdfs:range  :Seller ;
+              rdfs:label  "at seller" ;
+              rdfs:comment "Optional direct link from Person to Seller for a given purchase event." .
+
+:locatedIn    a owl:ObjectProperty ;
+              rdfs:domain :Seller ;
+              rdfs:range  :Location ;
+              rdfs:label  "located in" .
+
+:manufactures a owl:ObjectProperty ;
+              rdfs:domain :Seller ;
+              rdfs:range  :Product ;
+              rdfs:label  "manufactures" .
+
+############################################################
+#  EDGE-LEVEL DATATYPE / ANNOTATION PROPERTIES
+#  (to be attached to a statement via RDF-star)
+############################################################
+:timestamp         a owl:AnnotationProperty , owl:DatatypeProperty ;
+                   rdfs:label "timestamp" ;
+                   rdfs:comment "Date-time when the purchase occurred." ;
+                   rdfs:range xsd:dateTime .
+
+:ticketId          a owl:AnnotationProperty , owl:DatatypeProperty ;
+                   rdfs:label "ticket id" ;
+                   rdfs:range xsd:string .
+
+:quantity          a owl:AnnotationProperty , owl:DatatypeProperty ;
+                   rdfs:label "quantity purchased" ;
+                   rdfs:range xsd:int .
+
+:unitPrice         a owl:AnnotationProperty , owl:DatatypeProperty ;
+                   rdfs:label "unit price" ;
+                   rdfs:range xsd:decimal .
+
+:priceAfterPromo   a owl:AnnotationProperty , owl:DatatypeProperty ;
+                   rdfs:label "price after promo" ;
+                   rdfs:range xsd:decimal .
+
+:promoDescription  a owl:AnnotationProperty , owl:DatatypeProperty ;
+                   rdfs:label "promotion description" ;
+                   rdfs:range xsd:string .
+
+############################################################
+#  (OPTIONAL) SAMPLE FACT QUAD – illustrates how to
+#  bind edge-level attributes using Turtle-star
+############################################################
+
+#  Person :M42 bought product :SKU-123 on 2025-06-24 at 10:15,
+#  2 units, promo price 17.99 (was 19.99), ticket T-98765.
+
+<< :M42  :purchased   :SKU-123 >>
+        :timestamp         "2025-06-24T10:15:00+02:00"^^xsd:dateTime ;
+        :ticketId          "T-98765" ;
+        :quantity          2 ;
+        :unitPrice         "19.99"^^xsd:decimal ;
+        :priceAfterPromo   "17.99"^^xsd:decimal ;
+        :promoDescription  "Weekend special 10 % off" .
+
+#  Store and geography context (optional)
+:Store-001 a :Seller ;
+           rdfs:label "Main Street Market" ;
+           :locatedIn  :LOC-DBN .
+:LOC-DBN   a :Location ;
+           rdfs:label "Durban, ZA" .
+
+#  Link Person to Seller for the same timestamp
+<< :M42  :atSeller  :Store-001 >>
+        :timestamp  "2025-06-24T10:15:00+02:00"^^xsd:dateTime .

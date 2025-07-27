@@ -1,0 +1,30 @@
+base_uri: "https://example.org/retail/"
+prefixes:
+  gr: "http://purl.org/goodrelations/v1#"
+  rio: "https://w3id.org/neo4j/rio#"
+  foaf: "http://xmlns.com/foaf/0.1/"
+  rupo: "https://w3id.org/rupo#"
+  schema: "https://schema.org/"
+  time: "http://www.w3.org/2006/time#"
+  skos: "http://www.w3.org/2004/02/skos/core#"
+
+tables:
+  products.csv:
+    class: "gr:ProductOrServiceModel"
+    id_col: "PRODUCT_ID"
+    props:
+      MANUFACTURER: "schema:manufacturer"
+      DEPARTMENT:   "skos:broader"
+      BRAND:        "schema:brand"
+      CURR_SIZE_OF_PRODUCT: "schema:packageQuantity"
+  hh_demographics.csv:
+    class: "foaf:Group"
+    id_col: "household_key"
+    props:
+      AGE_DESC:  "rupo:ageBand"
+      INCOME_DESC: "rupo:incomeBand"
+      HOUSEHOLD_SIZE_DESC: "rupo:householdSize"
+  transactions.csv:
+    class: "rio:Transaction"
+    id_col: "BASKET_ID"
+    line_item: true

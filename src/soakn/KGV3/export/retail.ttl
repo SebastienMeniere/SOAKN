@@ -1,0 +1,119 @@
+@prefix ret:    <http://example.com/retail#> .
+@prefix schema: <https://schema.org/> .
+@prefix gr:     <http://purl.org/goodrelations/v1#> .
+@prefix owl:    <http://www.w3.org/2002/07/owl#> .
+@prefix rdfs:   <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:    <http://www.w3.org/2001/XMLSchema#> .
+
+##################################################################
+#   CLASSES
+##################################################################
+
+ret:Consumer         a owl:Class ; rdfs:label "Consumer" .
+ret:Person           a owl:Class ; rdfs:subClassOf ret:Consumer , schema:Person .
+ret:Household        a owl:Class ; rdfs:subClassOf ret:Consumer .
+ret:ConsumerGroup    a owl:Class ; rdfs:subClassOf ret:Consumer .
+time:Instant         a owl:Class .
+time:TemporalEntity  a owl:Class .
+
+
+ret:Seller          a owl:Class ;
+        rdfs:subClassOf schema:Organization , gr:BusinessEntity ;
+        rdfs:label "Seller" .
+ret:Store           a owl:Class ; rdfs:subClassOf ret:Seller , schema:Store .
+ret:OnlineSeller    a owl:Class ; rdfs:subClassOf ret:Seller .
+
+ret:Product         a owl:Class ;
+        rdfs:subClassOf gr:ProductOrService , schema:Product .
+
+ret:Transaction     a owl:Class ; rdfs:subClassOf schema:Event .
+ret:Basket          a owl:Class .
+ret:BasketItem      a owl:Class .
+ret:Location        a owl:Class ; rdfs:subClassOf schema:Place .
+
+##################################################################
+#   OBJECT PROPERTIES
+##################################################################
+
+ret:atTime
+        a owl:ObjectProperty ;
+        rdfs:domain  ret:Transaction ;
+        rdfs:range   time:Instant ;
+        rdfs:label   "at time" ;
+        owl:inverseOf time:inTemporalPosition .      # optional convenience
+
+
+ret:madeTransaction
+        a owl:ObjectProperty ;
+        rdfs:domain ret:Consumer ;
+        rdfs:range  ret:Transaction ;
+        rdfs:label "made transaction" .
+
+ret:atSeller a owl:ObjectProperty ;
+        rdfs:domain ret:Transaction ;
+        rdfs:range  ret:Seller .
+
+ret:hasBasket a owl:ObjectProperty ;
+        rdfs:domain ret:Transaction ;
+        rdfs:range  ret:Basket .
+
+ret:hasLine a owl:ObjectProperty ;
+        rdfs:domain ret:Basket ;
+        rdfs:range  ret:BasketItem .
+
+ret:ofProduct a owl:ObjectProperty ;
+        rdfs:domain ret:BasketItem ;
+        rdfs:range  ret:Product .
+
+ret:manufacturedBy a owl:ObjectProperty ;
+        rdfs:domain ret:Product ;
+        rdfs:range  ret:Seller .
+
+ret:locatedIn a owl:ObjectProperty ;
+        rdfs:domain ret:Seller ;
+        rdfs:range  ret:Location .
+
+##################################################################
+#   DATATYPE PROPERTIES (examples – add freely later)
+##################################################################
+
+ret:age a owl:DatatypeProperty ;
+        rdfs:domain ret:Person ;
+        rdfs:range  xsd:string .           # keep string for buckets (“65+”)
+
+ret:incomeBracket a owl:DatatypeProperty ;
+        rdfs:domain ret:Consumer ;
+        rdfs:range  xsd:string .
+
+ret:householdSize a owl:DatatypeProperty ;
+        rdfs:domain ret:Household ;
+        rdfs:range  xsd:int .
+
+ret:quantity a owl:DatatypeProperty ;
+        rdfs:domain ret:BasketItem ;
+        rdfs:range  xsd:int .
+
+ret:salesValue a owl:DatatypeProperty ;
+        rdfs:domain ret:BasketItem ;
+        rdfs:range  xsd:decimal .
+
+##################################################################
+#   ALIGNMENT WITH EXTERNAL VOCABS (OPTIONAL)
+##################################################################
+#   e.g., equivalentClass, equivalentProperty links here
+
+// Classes (node labels)
+CALL n10s.mapping.add("http://example.com/retail#Household", "Household");
+CALL n10s.mapping.add("http://example.com/retail#Transaction", "Transaction");
+CALL n10s.mapping.add("http://example.com/retail#Product", "Product");
+CALL n10s.mapping.add("http://example.com/retail#Seller", "Seller");
+CALL n10s.mapping.add("http://example.com/retail#Basket", "Basket");
+CALL n10s.mapping.add("http://example.com/retail#BasketItem", "BasketItem");
+
+// Relationships
+CALL n10s.mapping.add("http://example.com/retail#madeTransaction", "madeTransaction");
+CALL n10s.mapping.add("http://example.com/retail#hasBasket", "hasBasket");
+CALL n10s.mapping.add("http://example.com/retail#hasLine", "hasLine");
+CALL n10s.mapping.add("http://example.com/retail#ofProduct", "ofProduct");
+CALL n10s.mapping.add("http://example.com/retail#manufacturedBy", "manufacturedBy");
+CALL n10s.mapping.add("http://example.com/retail#atSeller", "atSeller");
